@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>社會領域課程設計與教材製作AI提示詞庫整合系統</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- 引入 canvas-confetti 特效套件 -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #fafaf9; /* 暖石色調，更有書卷感 */ }
+        .card:hover { border-color: #d97706; transition: all 0.3s ease; /* Amber-600 */ }
+        .copy-toast { visibility: hidden; min-width: 200px; margin-left: -100px; background-color: #44403c; color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 1000; left: 50%; bottom: 30px; }
+        .show { visibility: visible; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+        
+        /* 標籤頁活動狀態 (暖橘色系) */
+        .active-tab { border-bottom: 3px solid #d97706; color: #b45309; font-weight: bold; }
+
+        /* 自定義捲軸 */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #d6d3d1; border-radius: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background-color: transparent; }
+
+        /* 吉祥物效果：調整光暈為大地/翠綠感 */
+        .mascot-container {
+            position: fixed; bottom: 20px; left: 20px; z-index: 100;
+            width: 100px; height: 100px; cursor: grab; transition: transform 0.3s ease;
+        }
+        .mascot-container:active { cursor: grabbing; }
+        .mascot-container img { width: 100%; height: 100%; user-select: none; pointer-events: none; }
+        .mascot-container:hover { animation: shake 0.1s infinite, neon-glow 1.5s infinite alternate; }
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            10% { transform: translate(-1px, -2px) rotate(-1deg); }
+            20% { transform: translate(-3px, 0px) rotate(1deg); }
+            30% { transform: translate(3px, 2px) rotate(0deg); }
+            40% { transform: translate(1px, -1px) rotate(1deg); }
+            50% { transform: translate(-1px, 2px) rotate(-1deg); }
+            60% { transform: translate(-3px, 1px) rotate(0deg); }
+            70% { transform: translate(3px, 1px) rotate(-1deg); }
+            80% { transform: translate(-1px, -1px) rotate(1deg); }
+            90% { transform: translate(1px, 2px) rotate(0deg); }
+            100% { transform: translate(1px, -2px) rotate(-1deg); }
+        }
+        @keyframes neon-glow {
+            from { filter: drop-shadow(0 0 5px #fff) drop-shadow(0 0 10px #fff) drop-shadow(0 0 15px #f59e0b) drop-shadow(0 0 20px #f59e0b); }
+            to { filter: drop-shadow(0 0 10px #fff) drop-shadow(0 0 20px #10b981) drop-shadow(0 0 30px #10b981) drop-shadow(0 0 40px #10b981); }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <!-- 吉祥物 -->
+    <div class="mascot-container" title="Liyu Chill Guy">
+        <img src="https://gongminshenliyuchiutiger.github.io/__public-useful__/image/LiyuChill.svg" alt="LiyuChillGuy">
+    </div>
+
+    <div class="max-w-5xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-12 mt-8">
+            <h1 class="font-extrabold tracking-tight leading-none mb-4">
+                <span class="block text-2xl md:text-3xl text-stone-500 mb-2 font-medium">社會領域課程設計與教材製作</span>
+                <!-- 標題漸層：結合歷史(Amber)、公民(Rose)、地理(Emerald) -->
+                <span class="block text-4xl md:text-6xl bg-clip-text text-transparent bg-gradient-to-r from-amber-600 via-rose-500 to-emerald-600">
+                    AI提示詞庫整合系統
+                </span>
+            </h1>
+            <div class="h-1 w-32 bg-gradient-to-r from-amber-500 to-emerald-500 mx-auto rounded-full opacity-60"></div>
+        </div>
+
+        <!-- PARTS 架構概念區 -->
+        <div class="mb-12 bg-white px-6 py-8 rounded-xl border border-stone-200 shadow-sm hover:shadow-md transition-shadow">
+            <div class="flex items-center justify-center mb-3">
+                <h3 class="text-xl font-bold text-stone-800"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-2"></i>採用 PARTS 專家級提示詞架構</h3>
+            </div>
+            <p class="text-stone-500 text-sm text-center mb-8">以下五大要素能幫助極大化AI的產出品質。每一個卡片皆已經融合了這些設計：</p>
+            <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center">
+                <div class="p-4 bg-indigo-50/50 border border-indigo-100 rounded-lg group hover:bg-indigo-50 transition-colors">
+                    <div class="text-2xl font-black text-indigo-500 mb-1 group-hover:scale-110 transition-transform">P</div>
+                    <div class="font-bold text-stone-800 text-sm mb-1">Persona</div>
+                    <div class="text-xs text-stone-500">設定專家角色</div>
+                </div>
+                <div class="p-4 bg-sky-50/50 border border-sky-100 rounded-lg group hover:bg-sky-50 transition-colors">
+                    <div class="text-2xl font-black text-sky-500 mb-1 group-hover:scale-110 transition-transform">A</div>
+                    <div class="font-bold text-stone-800 text-sm mb-1">Action</div>
+                    <div class="text-xs text-stone-500">給予明確任務</div>
+                </div>
+                <div class="p-4 bg-emerald-50/50 border border-emerald-100 rounded-lg group hover:bg-emerald-50 transition-colors">
+                    <div class="text-2xl font-black text-emerald-500 mb-1 group-hover:scale-110 transition-transform">R</div>
+                    <div class="font-bold text-stone-800 text-sm mb-1">Result</div>
+                    <div class="text-xs text-stone-500">限定產出格式</div>
+                </div>
+                <div class="p-4 bg-amber-50/50 border border-amber-100 rounded-lg group hover:bg-amber-50 transition-colors">
+                    <div class="text-2xl font-black text-amber-500 mb-1 group-hover:scale-110 transition-transform">T</div>
+                    <div class="font-bold text-stone-800 text-sm mb-1">Target</div>
+                    <div class="text-xs text-stone-500">指定目標受眾</div>
+                </div>
+                <div class="p-4 bg-rose-50/50 border border-rose-100 rounded-lg col-span-2 md:col-span-1 group hover:bg-rose-50 transition-colors">
+                    <div class="text-2xl font-black text-rose-500 mb-1 group-hover:scale-110 transition-transform">S</div>
+                    <div class="font-bold text-stone-800 text-sm mb-1">Scenario</div>
+                    <div class="text-xs text-stone-500">提供背景情境</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workflow Tabs -->
+        <div class="flex flex-wrap justify-center gap-4 md:gap-12 mb-8 border-b border-stone-200 px-2 pb-2">
+            <button onclick="switchTab('stage1')" id="tab-stage1" class="pb-3 text-base md:text-lg active-tab whitespace-nowrap"><i class="fa-solid fa-book-open mr-2"></i>1. 教材解構</button>
+            <button onclick="switchTab('stage2')" id="tab-stage2" class="pb-3 text-base md:text-lg text-stone-400 hover:text-amber-600 whitespace-nowrap"><i class="fa-solid fa-lightbulb mr-2"></i>2. 創意融入</button>
+            <button onclick="switchTab('stage3')" id="tab-stage3" class="pb-3 text-base md:text-lg text-stone-400 hover:text-amber-600 whitespace-nowrap"><i class="fa-solid fa-layer-group mr-2"></i>3. 活動素材</button>
+            <button onclick="switchTab('stage4')" id="tab-stage4" class="pb-3 text-base md:text-lg text-stone-400 hover:text-amber-600 whitespace-nowrap"><i class="fa-solid fa-clipboard-check mr-2"></i>4. 試教與評量</button>
+        </div>
+
+        <!-- 控制面板區 (Control Panel) - 轉為大地/古籍色調 -->
+        <div class="mb-8 bg-stone-50 border border-stone-200 rounded-xl shadow-sm relative overflow-hidden transition-all duration-300">
+            <!-- 裝飾圓圈 -->
+            <div class="absolute -right-6 -top-6 w-24 h-24 bg-amber-100 rounded-full opacity-40 pointer-events-none"></div>
+            
+            <!-- 標題按鈕區 (可點擊收合) -->
+            <button onclick="togglePanel()" class="w-full flex items-center justify-between p-5 bg-stone-50 hover:bg-stone-100 transition-colors focus:outline-none relative z-10">
+                <div class="flex items-center">
+                    <h3 class="text-lg font-bold text-stone-800"><i class="fa-solid fa-sliders mr-2"></i>提示詞控制面板</h3>
+                    <span class="ml-3 text-xs bg-amber-600 text-white px-2 py-0.5 rounded-full"><i class="fa-solid fa-bolt mr-1"></i>進階功能</span>
+                </div>
+                <div class="flex items-center text-amber-700 text-sm font-medium">
+                    <span id="panel-text" class="mr-2">點擊收合</span>
+                    <i id="panel-icon" class="fa-solid fa-chevron-up transition-transform duration-300"></i>
+                </div>
+            </button>
+            
+            <div id="control-panel-content" class="px-6 max-h-[800px] opacity-100 overflow-hidden transition-all duration-500 ease-in-out relative z-10">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pb-6 pt-5 border-t border-stone-200/50">
+                    <!-- 左側：情境替換區 (佔 7 欄) -->
+                    <div class="lg:col-span-7 bg-white p-5 rounded-xl border border-stone-100 shadow-sm transition-shadow hover:shadow-md">
+                        <div class="mb-4 border-b border-stone-100 pb-2">
+                            <h4 class="text-sm font-bold text-stone-800"><i class="fa-solid fa-wand-magic-sparkles mr-2 text-amber-500"></i>一鍵變數替換區</h4>
+                        </div>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-500 mb-1.5"><i class="fa-solid fa-bullseye mr-1 text-stone-400"></i>對應 [請輸入單元名稱]</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fa-solid fa-tag text-stone-400"></i>
+                                    </div>
+                                    <input type="text" id="topic-input" oninput="renderPrompts(currentTab)" placeholder="輸入主題 (如: 媒體識讀、台灣地形、大航海時代)..." class="w-full pl-9 pr-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm transition-all focus:bg-white bg-stone-50">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-500 mb-1.5"><i class="fa-regular fa-file-lines mr-1 text-stone-400"></i>對應 [請貼上文本與題目]</label>
+                                <div class="relative">
+                                    <div class="absolute top-2.5 left-3 pointer-events-none">
+                                        <i class="fa-solid fa-quote-left text-stone-400"></i>
+                                    </div>
+                                    <textarea id="material-input" oninput="renderPrompts(currentTab)" placeholder="貼上課文段落或考卷題目..." class="w-full pl-9 pr-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm h-16 resize-none transition-all focus:bg-white bg-stone-50 custom-scrollbar"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 右側：資料篩選區 (佔 5 欄) -->
+                    <div class="lg:col-span-5 bg-white p-5 rounded-xl border border-stone-100 shadow-sm flex flex-col transition-shadow hover:shadow-md">
+                        <div class="mb-4 border-b border-stone-100 pb-2">
+                            <h4 class="text-sm font-bold text-stone-800"><i class="fa-solid fa-filter mr-2 text-emerald-600"></i>卡片篩選器</h4>
+                        </div>
+                        <div class="space-y-4 flex-grow flex flex-col">
+                            <div>
+                                <label class="block text-xs font-semibold text-stone-500 mb-1.5"><i class="fa-solid fa-magnifying-glass mr-1 text-stone-400"></i>透過關鍵字尋找</label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <i class="fa-solid fa-search text-stone-400"></i>
+                                    </div>
+                                    <input type="text" id="search-input" oninput="renderPrompts(currentTab)" placeholder="搜尋標題或內容..." class="w-full pl-9 pr-4 py-2 border border-stone-200 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent text-sm transition-all focus:bg-white bg-stone-50">
+                                </div>
+                            </div>
+                            <div class="mt-auto pt-2">
+                                <label class="block text-xs font-semibold text-stone-500 mb-2"><i class="fa-solid fa-screwdriver-wrench mr-1 text-stone-400"></i>指定專屬 AI 工具</label>
+                                <div class="flex gap-1 bg-stone-100 p-1 rounded-lg border border-stone-200">
+                                    <button onclick="setToolFilter('All')" id="filter-All" class="filter-btn flex-1 py-1.5 rounded-md bg-amber-600 text-white font-medium text-xs transition-colors shadow-sm">全部顯示</button>
+                                    <button onclick="setToolFilter('Gemini')" id="filter-Gemini" class="filter-btn flex-1 py-1.5 rounded-md bg-transparent text-stone-500 hover:text-stone-800 hover:bg-stone-200 font-medium text-xs transition-colors">Gemini</button>
+                                    <button onclick="setToolFilter('NotebookLM')" id="filter-NotebookLM" class="filter-btn flex-1 py-1.5 rounded-md bg-transparent text-stone-500 hover:text-stone-800 hover:bg-stone-200 font-medium text-xs transition-colors">NotebookLM</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stage Description -->
+        <div class="mb-6 border-l-4 border-amber-600 pl-4 py-1 bg-gradient-to-r from-amber-50/80 to-transparent rounded-r-lg">
+            <h2 id="stage-title" class="text-xl font-bold text-stone-800"><i class="fa-solid fa-book-open mr-2 text-amber-600"></i>階段一：書商教材解構與基礎熟悉</h2>
+            <p id="stage-desc" class="text-stone-600 text-sm mt-1">協助師培生快速掌握課本內容架構，找出核心知識點與學生盲區。</p>
+        </div>
+
+        <!-- Cards Container -->
+        <div id="content-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 min-h-[300px]">
+            <!-- 內容會由 JavaScript 動態填入 -->
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-20 text-center text-stone-400 text-sm border-t border-stone-200 pt-8 pb-4">
+            <div class="mb-3">
+                <a href="https://www.facebook.com/happyliyuchilltiger" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center group">
+                    <i class="fa-brands fa-facebook text-2xl text-amber-600 mr-2 group-hover:scale-110 transition-transform"></i>
+                    <span class="font-medium text-base text-stone-500 group-hover:text-amber-700 transition-colors">快樂鯉魚秋老虎</span>
+                </a>
+            </div>
+            <p>Copyright © Liyuchiutiger</p>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="copy-toast"><i class="fa-solid fa-circle-check text-emerald-400 mr-2"></i>提示詞已完整複製到剪貼簿！</div>
+
+    <script>
+        const stageInfo = {
+            stage1: { title: '<i class="fa-solid fa-book-open mr-2 text-amber-600"></i>階段一：書商教材解構與基礎熟悉', desc: '扎實基本功：上傳或輸入書商課本內容，讓 AI 幫你萃取核心概念，預測學生盲點，並補充最新時事。' },
+            stage2: { title: '<i class="fa-solid fa-lightbulb mr-2 text-rose-500"></i>階段二：引起動機與創意融入', desc: '加點調味料：在課本的基礎上，設計有趣的開場破冰、將生硬法規或史地知識轉化為故事，或融入學生次文化。' },
+            stage3: { title: '<i class="fa-solid fa-layer-group mr-2 text-emerald-600"></i>階段三：互動素材與學習單設計', desc: '產出教具：將教材轉化為實作活動、具備思考層次的挖空學習單，以及具視覺衝擊力的簡報大綱。' },
+            stage4: { title: '<i class="fa-solid fa-clipboard-check mr-2 text-indigo-500"></i>階段四：課堂評量與試教防禦', desc: '備戰上台：產出快問快答、模擬會考/學測素養題，並請 AI 扮演嚴格教授針對你的試教內容進行犀利講評。' }
+        };
+
+        const data = {
+            stage1: [
+                { id: 'S1-1', title: '概念地圖萃取', tool: 'NotebookLM', tag: '理解課本', content: '我上傳了書商的這個單元教材 PDF，請你扮演一位資深的課程設計專家。\n\n【任務】：請幫我從這份教材中萃取出這個單元的核心「概念地圖」與「知識點階層」，包含主要的知識節點與其關聯性。\n\n【輸出格式】：請以清晰的樹狀層級或條列式大綱呈現，讓我可以快速掌握備課重點與整體脈絡。' },
+                { id: 'S1-2', title: '難點與迷思預測', tool: 'Gemini', tag: '學情準備', content: '你現在是一位擁有 20 年教學經驗的資深中學社會領域（歷史、地理、公民）老師。請閱讀以下課文段落：[請貼上課文段落]。\n\n【任務】：請針對 [國中/高中] 學生的認知發展程度，預測他們在閱讀這段文本時，最容易卡關的 3 個「專有名詞」與 2 個常見「迷思概念」。\n\n【輸出格式】：請用「表格」呈現，欄位包含：「專有名詞 / 迷思概念」、「學生可能產生的誤解」、「白話文舉例與解釋（需結合學生日常生活體驗）」。' },
+                { id: 'S1-3', title: '新舊課綱差異比對', tool: 'NotebookLM', tag: '版本更新', content: '我上傳了同一個教學單元的「舊版課本」與「新版課本」資料。請你以教育領域的版本分析師角度進行比對。\n\n【任務】：幫我細緻比對這兩份文件並列出主要差異。\n\n【輸出格式】：請分點明確列出 1. 刪除了哪些舊觀念？ 2. 新增了哪些必教的重點與名詞？ 3. 建議我在備課時，該如何針對這些更動轉換講述重點與心態？' },
+                { id: 'S1-4', title: '先備知識連結', tool: 'Gemini', tag: '教學銜接', content: '你是一位熟悉十二年國教課綱的社會領域教師。我要教中學的 [請輸入單元：例如行政法、氣候類型、台灣開發史]。\n\n【任務】：請告訴我，學生在「國小社會」與「國中社會」階段，分別已經學過哪些相關的先備知識？\n\n【輸出格式】：請列出具體的「已學過的概念名稱」，並提供 2 個我可以如何從那些國中小經驗「破題開場」的具體提問（作為新課程承先啟後的橋樑）。' },
+                { id: 'S1-5', title: '文本難度降維打擊', tool: 'Gemini', tag: '差異化', content: '你是一位擅長「差異化教學」與「譬喻法」的社會領域教育專家。課本裡的這段描述：[請貼上艱澀的課文段落]，對班上後段班或學習動機較弱的學生來說太抽象了。\n\n【任務】：請幫我將這段文字進行降階與轉譯。\n\n【輸出要求】：請提供兩種翻譯版本：A. 國小高年級也能聽懂的「極度白話文版」。B. 結合「速食店或超商結帳、手遊課金等中學生熟悉的生活經驗」做比喻的「生活情境版」。' },
+                { id: 'S1-6', title: '找尋補充時事', tool: 'Gemini', tag: '更新案例', content: '你是一位時事敏銳度極高的社會領域教育推廣者。這單元課本舉的案例可能有點舊了。\n\n【任務】：請根據課本的 [請輸入知識點，如：無罪推定原則、極端氣候影響、古蹟保存爭議]，幫我搜尋 3 個「近一年內」發生在台灣或國際的新聞時事，適合作為國高中生上課的補充案例。\n\n【輸出格式】：請以列表呈現，每則新聞需包含：「新聞標題與大約發生時間」、「簡短的事件爭點摘要」、「這個新聞如何精準對應到課堂知識點」。' }
+            ],
+            stage2: [
+                { id: 'S2-1', title: '引起動機 (Hook) 設計', tool: 'Gemini', tag: '破冰設計', content: '你是一位擅長創意教學設計的教育專家。我要準備 [請輸入單元名稱] 的第一堂課，目前的教材內容有些枯燥。\n\n【任務】：請幫我設計一個 5 分鐘的課前「引起動機 (Hook)」活動或情境提問。必須與目前國高中生的校園生活、社群媒體或流行次文化深度結合，能引發兩難思考或熱烈討論。\n\n【輸出要求】：請提供：1. 活動名稱 2. 老師的開場破冰話術片段 3. 具體操作步驟 4. 遊戲結束後如何順暢地將討論收斂回課堂重點。' },
+                { id: 'S2-2', title: '枯燥文本故事化', tool: 'Gemini', tag: '情境塑造', content: '你是一位專職於「教育桌遊」與「情境故事」設計的編劇。課文關於 [請輸入枯燥主題，如：行政救濟程序、洋流運作機制、清領時期賦稅制度] 的描述十分生硬。\n\n【任務】：請依照課本的知識結構，將它改寫成一個充滿懸疑、推理解謎或角色扮演風格的「校園日常微小說」或是「歷史情境穿越劇」。\n\n【輸出要求】：故事長度約 500 字，主角必須是一名平常的中學生，讓全班學生在跟著主角經歷並解決問題的過程中，自然而然學會並帶出該主題的核心概念。' },
+                { id: 'S2-3', title: '融入次文化梗', tool: 'Gemini', tag: '增進共鳴', content: '你是一位非常了解青少年文化與網路迷因（Meme）的幽默老師。\n\n【任務】：請將課本中的 [請輸入概念，例如：機會成本與選擇、板塊構造、第一次世界大戰]，結合目前中學生流行的次文化、熱門電玩遊戲、知名動漫（如：咒術迴戰、葬送的芙莉蓮等）或常見網路語錄。\n\n【輸出要求】：設計一個能讓全班秒懂且會心一笑的舉例方式，並附上老師在上課時配合這個舉例可以搭配使用的「幽默台詞」或「互動橋段」。' },
+                { id: 'S2-4', title: '兩難情境 (Dilemma) 設計', tool: 'Gemini', tag: '議題思辨', content: '你是一位專精於「價值觀澄清法」與「議題推演」的社會領域老師。針對課本裡 [請輸入主題，如：媒體言論自由與隱私權、經濟發展與環境保育爭議、歷史轉型正義] 的概念。\n\n【任務】：請幫我設計一個「沒有絕對對錯、充滿掙扎」的兩難情境 (Dilemma)。情境必須是學生容易想像的生活周遭，或者是能帶入歷史人物面臨的抉擇。\n\n【輸出要求】：1. 描述該情境的背景故事 2. 列出「選項 A」與「選項 B」各自帶來的好處與代價 3. 提供三個可以用來引導全班進行「選邊站」討論的省思提問。' },
+                { id: 'S2-5', title: '角色扮演陣營卡', tool: 'Gemini (Canvas)', tag: '多角視野', content: '你是一位實境角色扮演（LARP）的活動設計師。我們要在課堂上針對 [請輸入議題，如：校園廢除早自習、工業區設置與環境保育、歷史條約簽訂模擬] 舉辦一場 15 分鐘的情境討論會。\n\n【任務】：請為我生成 4 張不同立場的「角色設定卡」（例如：行政/家長/學生，或 不同國家的代表）。\n\n【輸出格式】：請使用表格為每張卡片提供：1. 角色名稱與簡介 2. 該角色表面上堅持的核心論點 3. 該角色心中不想說出來的隱憂 4. 一個在談判時絕不退讓的「秘密底線」。' },
+                { id: 'S2-6', title: 'ORID 焦點討論導引', tool: 'Gemini', tag: '提問設計', content: '你是一位精通 ORID（焦點討論法）的引導師。我等一下要放一段關於 [請輸入主題，如：國民法官制度介紹、全球暖化紀錄片、二戰集中營歷史影像] 的短影片給學生看。\n\n【任務】：請利用 ORID 的四個層次，幫我設計一套流暢的提問腳本，讓我可以在影片播完後，帶領學生進行 5~8 分鐘的反思討論。\n\n【輸出要求】：請明確列出 1. O 客觀描述層次 (Objective)  2. R 情緒反應層次 (Reflective)  3. I 意義詮釋層次 (Interpretive)  4. D 決策行動層次 (Decisional) 各 1~2 個適合國高中生程度的問題，切忌過於學術或抽象。' }
+            ],
+            stage3: [
+                { id: 'S3-1', title: '課堂實作任務轉換', tool: 'Gemini', tag: '活動規劃', content: '你是一位提倡實作體驗與 PBL 問題導向學習的教育創新專家。課本關於 [請輸入主題，如：性別平權、都市計畫更新、歷史博物館策展] 幾乎都是單向講述。\n\n【任務】：請幫我設計一堂 45 分鐘內的「課堂小組實作任務」。要求學生應用課本知識去產出一個具體的解決途徑或作品（如：畫一張倡議海報、規劃一份懶人包、演短劇）。\n\n【輸出要求】：1. 給定明確的任務情境與目標 2. 學生小組需要扮演什麼角色？ 3. 提供給學生的分步操作指南（分成清晰的 3~4 個步驟）。' },
+                { id: 'S3-2', title: '挖空思考學習單', tool: 'Gemini', tag: '學習單', content: '你是一位善於運用「鷹架理論」製作學習單的師資輔導員。我稍後會貼上一段課本重點資訊。\n\n【任務】：請參考這些重點，製作一份「半結構式的重點挖空學習單」。不可以直接照抄課本字句讓學生盲目填空。\n\n【輸出要求】：請設計具漸進層次的學習單：1. 第一部分：基礎概念（定義釐清與核心關鍵字的克漏字，需換句話說） 2. 第二部分：實例配對（給定情境，連對應的概念或時代） 3. 第三部分：進階思考（設計 2 題沒有標準答案，需結合學生個人經驗或史觀批判的簡答題）。' },
+                { id: 'S3-3', title: '視覺化簡報優化', tool: 'Gemini', tag: '媒材準備', content: '你現在是一位專業的簡報設計顧問與演講教練。我要針對社會領域 [請輸入單元範圍] 製作教學簡報。\n\n【任務】：請幫我重新梳理架構，給出一份 8 頁以內的「簡報分鏡大綱」，協助我擺脫文字密密麻麻的壞習慣。\n\n【輸出要求】：對於每一頁簡報，請提供：「標題」、「主講者口白摘要」，並必須包含《視覺建議》：明確指出「畫面上不該放什麼多餘文字」，同時具體建議我「該用什麼樣的圖表、象限比對、地圖、或真實情境照」來取代文字，增強視覺衝擊。' },
+                { id: 'S3-4', title: '課堂辯論攻防準備', tool: 'NotebookLM', tag: '辯論指引', content: '你是一位具備豐富指導經驗的辯論賽教練與資料分析師。針對我上傳的不同立場閱讀素材（探討 [請輸入主題，如：死刑存廢、核能發電廠興建、評價歷史人物的功過]）。\n\n【任務】：我要讓學生進行課堂微型辯論，請利用這些素材整理出一份「新手攻防懶人包」，減輕中學生的消化資料負擔。\n\n【輸出要求】：1. 正方申論最強的兩個論點架構 2. 反方申論最強的兩個論點架構 3. 請預測雙方在自由質詢時最常發生的「3 個核心交鋒點 (Clash)」，並提示防守策略。' },
+                { id: 'S3-5', title: '趣味卡牌遊戲機制', tool: 'Gemini', tag: '遊戲化', content: '你是一位擅長將抽象學科概念轉換為有趣互動的教育桌遊設計師。\n\n【任務】：請將課本內 [請輸入知識點：例如 民法的行為能力、氣候與農業的對應、大航海時代的貿易路線] 的概念，轉化為一套可以在課堂上 15 分鐘玩完的「簡易卡牌遊戲」。\n\n【輸出要求】：請詳細說明：1. 遊戲背景設定 2. 教師需要自製哪些卡牌？（如「身分卡」、「氣候事件卡」、「交易物資卡」） 3. 遊戲回合進行流程 4. 勝利條件（如何迫使學生順暢運用上課學到的知識才能獲勝？）。' },
+                { id: 'S3-6', title: '差異化教學任務設計', tool: 'Gemini', tag: '照顧差異', content: '你是一位專精於特殊教育與差異化教學的師資培育者。在教 [請輸入單元焦點：如 中央政府權限、人口金字塔分析、工業革命的影響] 時，我面臨班上學生程度落差極大的挑戰。\n\n【任務】：給定相同的核心學習目標，請幫我設計三個不同等級的「彈性學習任務與練習單」。\n\n【輸出要求】：請基於同一個概念發展出：A. 基礎版（認知負擔輕：如選擇、明確配對） B. 進階版（一般程度：如情境推論、填表或讀圖） C. 挑戰版（高層次思考：如個案分析、糾錯或申論）。並給予老師一個巡迴指導時的策略建議。' }
+            ],
+            stage4: [
+                { id: 'S4-1', title: '概念快問快答命題', tool: 'Gemini', tag: '形成性評量', content: '你是一位很會設計誘答選項的測驗與評量專家。\n\n【任務】：根據我後續貼上的課堂重點，幫我生成 5 題可以用在 Kahoot! 或是課堂舉手搶答的「多選快問快答題」。\n\n【輸出要求】：這 5 題必須直接對準學生最容易混淆的觀念。每個題要有 4 個選項。最重要的是，《誘答選項必須設計得分化度極高》，要能抓準似是而非的錯誤觀念，絕不可出現能輕易刪除的荒謬選項。請在最後附上正確答案與一行解析。' },
+                { id: 'S4-2', title: '素養情境混合題組', tool: 'NotebookLM', tag: '總結性評量', content: '你是一位參與過國中教育會考與大考中心學測命題的資深典試委員。\n\n【任務】：結合「我上傳的課本重點」以及「包含最新時事的補充素材」，為我設計一組符合素養導向趨勢的「情境混合題組」。\n\n【輸出要求】：1. 請先撰寫一段蘊含線索的情境導讀短文（可搭配假設的圖表或地圖情境） 2. 包含 2 題測驗高層次推論的單選題 3. 包含 1 題需引導學生從文本擷取資訊來作答的「手寫簡答題」 4. 針對簡答題，必須提供老師批改用的「給分規準 (Rubric)」(需明確列出完全給分、部分給分、不給分的條件)。' },
+                { id: 'S4-3', title: '實作活動評量尺規', tool: 'Gemini', tag: 'Rubric', content: '你是一位專攻多元評量與表現任務 (Performance Task) 的教育工作者。學生即將進行有關 [請輸入活動名稱：如 社區改變行動提案、在地田野調查報告、歷史人物翻案小論文] 的小組跑堂發表。\n\n【任務】：為了減輕老師主觀評分壓力並讓學生明確知道標準，請設計一份完整的評量尺規表 (Analytic Rubric)。\n\n【輸出要求】：請以「表格」呈現。直列向度至少涵蓋：「分析深度、證據與邏輯、視覺或口語呈現、團隊分工」四大項。橫列分為 1 分(待加強) 到 4 分(優異)。每個格子內必須填入具體觀察得到的《行為描述》，讓評分者能一目了然地勾選。' },
+                { id: 'S4-4', title: '段考陷阱題偵測', tool: 'Gemini', tag: '試題除錯', content: '你現在扮演一位「邏輯極佳、熱愛找出老師題目漏洞」的頂尖學霸，同時具備「命題輔導團」的專業除錯能力。\n\n【任務】：這是我剛出的一題段考選擇題：[請貼上題目敘述與 4 個選項]。請幫我進行「壓力測試與全面除錯」。\n\n【輸出要求】：請嚴厲揪出瑕疵。包含：1. 題幹是否有邏輯漏洞或語意不清？ 2. 選項是否有超過範圍的超綱名詞？ 3. 是否可能導致學生申訴「全送分」（如多個選項皆可通或無標準答案）？ 4. 在指出所有問題後，請幫我重寫一個無懈可擊的完美版本。' },
+                { id: 'S4-5', title: '反思退出卡 (Exit Ticket)', tool: 'Gemini', tag: '收斂總結', content: '你是一位精通形成性評量、能快速掌握全班學習成效的教學大師。我剛教完了 [請輸入單元焦點：如 媒體識讀、板塊運動、文藝復興] 這個重點單元。\n\n【任務】：請幫我設計 3 款不同思維層次的「退出卡 (Exit Ticket)」活動選項，讓我可以在下課前 5 分鐘讓學生寫在便條紙交回，確保他們真的有聽懂而不是死背。\n\n【輸出要求】：請提供 1. 「快速摘要題」（用一句話總結精華） 2. 「概念應用題」（套用到個人的日常經驗或現代社會） 3. 「類比隱喻題」（今天內容就像是某種東西，為什麼？）。問題請保持簡短犀利。' },
+                { id: 'S4-6', title: '試教(Demo)防禦演練', tool: 'Gemini', tag: '試教準備', content: '你現在扮演一位「教學經驗超過 30 年、嚴肅且注重學生高層次思考」的大學師培中心教授與教甄口試委員。\n\n【任務】：我準備要在教材教法課，對著您試教 [請輸入單元名稱] 15 分鐘。為了事前防禦，請提早「對我猛烈開火」。\n\n【輸出要求】：請針對該主題提出 3 個極度犀利的講評與口試挑戰問題。方向涵蓋：1. 實習老師最容易犯的「念稿式無聊教學」的盲點 2. 該主題最致命的「錯誤概念解釋或史觀偏頗」 3. 應對台下學生失去耐心的「班級經營策略」挑戰。請直接給出您的尖銳提問！' }
+            ]
+        };
+
+        let currentTab = 'stage1';
+        let currentFilter = 'All';
+
+        function togglePanel() {
+            const panel = document.getElementById('control-panel-content');
+            const icon = document.getElementById('panel-icon');
+            const text = document.getElementById('panel-text');
+            
+            if (panel.classList.contains('max-h-0')) {
+                panel.classList.remove('max-h-0', 'opacity-0');
+                panel.classList.add('max-h-[800px]', 'opacity-100');
+                icon.classList.add('rotate-180');
+                text.innerText = "點擊收合";
+            } else {
+                panel.classList.remove('max-h-[800px]', 'opacity-100');
+                panel.classList.add('max-h-0', 'opacity-0');
+                icon.classList.remove('rotate-180');
+                text.innerText = "點擊展開";
+            }
+        }
+
+        function setToolFilter(tool) {
+            currentFilter = tool;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-amber-600', 'text-white', 'border-transparent');
+                btn.classList.add('bg-transparent', 'text-stone-500', 'border-stone-200');
+            });
+            const activeBtn = document.getElementById(`filter-${tool}`);
+            activeBtn.classList.remove('bg-transparent', 'text-stone-500', 'border-stone-200');
+            activeBtn.classList.add('bg-amber-600', 'text-white', 'border-transparent');
+            renderPrompts(currentTab);
+        }
+
+        function renderPrompts(tab) {
+            const container = document.getElementById('content-grid');
+            container.innerHTML = '';
+            
+            const topicInput = document.getElementById('topic-input').value.trim();
+            const materialInput = document.getElementById('material-input').value.trim();
+            const searchInput = document.getElementById('search-input').value.trim().toLowerCase();
+
+            let filteredData = data[tab];
+
+            // 1. Tool Filter
+            if (currentFilter !== 'All') {
+                filteredData = filteredData.filter(item => item.tool.includes(currentFilter));
+            }
+
+            // 2. Search Filter
+            if (searchInput !== '') {
+                filteredData = filteredData.filter(item => 
+                    item.title.toLowerCase().includes(searchInput) || 
+                    item.content.toLowerCase().includes(searchInput) ||
+                    item.tag.toLowerCase().includes(searchInput)
+                );
+            }
+
+            if (filteredData.length === 0) {
+                container.innerHTML = `<div class="col-span-1 md:col-span-2 text-center text-stone-500 py-10"><i class="fa-solid fa-ghost text-4xl mb-3 text-stone-300"></i><br>找不到符合條件的提示詞，換個關鍵字試試看吧！</div>`;
+                return;
+            }
+            
+            filteredData.forEach(item => {
+                let finalContent = item.content;
+
+                // 替換單元變數 (正則匹配類似 [請輸入...] 且不是 [請貼上...])
+                if (topicInput) {
+                    finalContent = finalContent.replace(/\[請輸入.*?\]/g, `[${topicInput}]`);
+                }
+                
+                // 替換文本/題目變數 (只針對 [請貼上...])
+                if (materialInput) {
+                    finalContent = finalContent.replace(/\[請貼上.*?\]/g, `\n\n========\n${materialInput}\n========\n`);
+                }
+
+                const card = document.createElement('div');
+                card.className = 'card bg-white p-6 rounded-xl border border-stone-200 shadow-sm cursor-pointer relative group flex flex-col h-full';
+                
+                let formattedContent = finalContent.replace(/\n/g, '<br>');
+                
+                // Highlight search keywords
+                if (searchInput) {
+                    const regex = new RegExp(`(${searchInput})`, 'gi');
+                    formattedContent = formattedContent.replace(regex, `<mark class="bg-amber-200 rounded px-1">$1</mark>`);
+                }
+
+                card.onclick = () => copyText(finalContent);
+                
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center flex-wrap">
+                            <span class="text-xs font-bold text-stone-500 mr-2 border border-stone-300 rounded px-1.5 py-0.5 whitespace-nowrap mb-1 flex items-center h-fit"><i class="fa-solid fa-robot mr-1"></i>${item.tool}</span>
+                            <span class="text-lg font-bold text-stone-800 mb-1 leading-tight">${item.title}</span>
+                        </div>
+                        <span class="text-xs font-bold px-2 py-1 rounded bg-amber-50 text-amber-700 group-hover:bg-amber-100 whitespace-nowrap ml-2">${item.tag}</span>
+                    </div>
+                    <div class="flex-grow">
+                        <p class="text-stone-600 text-sm leading-relaxed mb-4 max-h-40 overflow-y-auto pr-2 custom-scrollbar">${formattedContent}</p>
+                    </div>
+                    <div class="text-xs text-amber-600 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-end mt-auto pt-2 border-t border-stone-100">
+                        <i class="fa-regular fa-copy mr-1"></i> 全文可捲動閱讀，點擊完整複製指令
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.querySelectorAll('button[id^="tab-"]').forEach(btn => {
+                btn.classList.remove('active-tab');
+                btn.classList.add('text-stone-400');
+            });
+            document.getElementById(`tab-${tab}`).classList.add('active-tab');
+            document.getElementById(`tab-${tab}`).classList.remove('text-stone-400');
+
+            document.getElementById('stage-title').innerHTML = stageInfo[tab].title;
+            document.getElementById('stage-desc').innerText = stageInfo[tab].desc;
+
+            renderPrompts(tab);
+        }
+
+        function copyText(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // 撒花特效：替換為大地色系 (橘、綠、紅、黃、石灰)
+                confetti({
+                    particleCount: 150,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#d97706', '#10b981', '#e11d48', '#f59e0b', '#78716c'],
+                    zIndex: 2000
+                });
+
+                const toast = document.getElementById("toast");
+                toast.className = "copy-toast show";
+                setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+            });
+        }
+
+        // 初始渲染
+        switchTab('stage1');
+
+        // 吉祥物拖曳邏輯
+        const mascot = document.querySelector('.mascot-container');
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+
+        mascot.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+        mascot.addEventListener('touchstart', dragStart, {passive: false});
+        document.addEventListener('touchmove', drag, {passive: false});
+        document.addEventListener('touchend', dragEnd);
+
+        function dragStart(e) {
+            isDragging = true;
+            if (e.type === "touchstart") {
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+            } else {
+                startX = e.clientX;
+                startY = e.clientY;
+            }
+            initialX = mascot.offsetLeft;
+            initialY = mascot.offsetTop;
+            mascot.style.transition = 'none';
+            e.preventDefault();
+        }
+
+        function drag(e) {
+            if (!isDragging) return;
+            let currentX, currentY;
+            if (e.type === "touchmove") {
+                currentX = e.touches[0].clientX;
+                currentY = e.touches[0].clientY;
+            } else {
+                currentX = e.clientX;
+                currentY = e.clientY;
+                e.preventDefault();
+            }
+            const dx = currentX - startX;
+            const dy = currentY - startY;
+
+            // 確保不會被 viewport 裁切得太誇張，但基本上允許隨意拖曳
+            mascot.style.left = initialX + dx + 'px';
+            mascot.style.top = initialY + dy + 'px';
+            mascot.style.bottom = 'auto';
+            mascot.style.right = 'auto';
+        }
+
+        function dragEnd(e) {
+            if (!isDragging) return;
+            isDragging = false;
+            mascot.style.transition = 'transform 0.3s ease';
+        }
+    </script>
+</body>
+</html>
